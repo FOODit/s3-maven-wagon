@@ -20,9 +20,14 @@ import org.apache.maven.wagon.authentication.AuthenticationException;
 import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.apache.maven.wagon.proxy.ProxyInfoProvider;
 import org.apache.maven.wagon.repository.Repository;
+import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
+import org.jets3t.service.impl.rest.httpclient.GoogleStorageService;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
+import org.jets3t.service.impl.rest.httpclient.RestStorageService;
+import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.security.AWSCredentials;
+import org.jets3t.service.security.GSCredentials;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,11 +37,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.jets3t.service.ServiceException;
-import org.jets3t.service.impl.rest.httpclient.GoogleStorageService;
-import org.jets3t.service.impl.rest.httpclient.RestStorageService;
-import org.jets3t.service.model.StorageObject;
-import org.jets3t.service.security.GSCredentials;
 
 
 /**
@@ -172,7 +172,7 @@ public class SimpleStorageServiceWagon extends AbstractWagon {
             IOException {
         buildDestinationPath(getDestinationPath(destination));
         StorageObject object = new StorageObject(basedir + destination);
-        object.setAcl(AccessControlList.REST_CANNED_PUBLIC_READ);
+        object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
         object.setDataInputFile(source);
         object.setContentLength(source.length());
 
@@ -199,7 +199,7 @@ public class SimpleStorageServiceWagon extends AbstractWagon {
 
     private void buildDestinationPath(String destination) throws ServiceException {
         StorageObject object = new StorageObject(basedir + destination + "/");
-        object.setAcl(AccessControlList.REST_CANNED_PUBLIC_READ);
+        object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
         object.setContentLength(0);
         service.putObject(bucket, object);
         int index = destination.lastIndexOf('/');
