@@ -5,7 +5,7 @@
     <artifactId>s3-maven-wagon</artifactId>
     <packaging>jar</packaging>
     <name>Amazon S3/Google Developer Storage Maven Wagon Support</name>
-    <version>3.4-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <description>Standard Maven wagon support for s3:// urls (forked from the Spring version)</description>
     <url>https://github.com/elek/s3-maven-wagon</url>
     <inceptionYear>2007</inceptionYear>
@@ -26,6 +26,12 @@
             <name>Elek, Márton</name>
             <roles>
                 <role>small modifications on this fork</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>FOODit</name>
+            <roles>
+                <role>Support private repos in GS</role>
             </roles>
         </developer>
     </developers>
