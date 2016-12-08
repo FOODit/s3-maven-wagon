@@ -47,7 +47,7 @@ import java.util.List;
  * <code>static.springframework.org</code> bucket on the S3 service. This
  * implementation uses the <code>username</code> and <code>passphrase</code>
  * portions of the server authentication metadata for credentials.
- * 
+ *
  * @author Ben Hale
  */
 public class SimpleStorageServiceWagon extends AbstractWagon {
@@ -172,7 +172,8 @@ public class SimpleStorageServiceWagon extends AbstractWagon {
             IOException {
         buildDestinationPath(getDestinationPath(destination));
         StorageObject object = new StorageObject(basedir + destination);
-        object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
+        // not setting acl to support both public and private repos
+        // object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
         object.setDataInputFile(source);
         object.setContentLength(source.length());
 
