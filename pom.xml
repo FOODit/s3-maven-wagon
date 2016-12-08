@@ -43,9 +43,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:git@github.com:elek/s3-maven-wagon.git</connection>
-        <url>scm:git:git@github.com:elek/s3-maven-wagon.git</url>
-        <developerConnection>scm:git:git@github.com:elek/s3-maven-wagon.git</developerConnection>
+        <url>https://github.com/FOODit/s3-maven-wagon</url>
+        <connection>scm:git:git@github.com:FOODit/s3-maven-wagon.git</connection>
+        <developerConnection>scm:git:git@github.com:FOODit/s3-maven-wagon.git</developerConnection>
     </scm>
     <build>
         <plugins>
