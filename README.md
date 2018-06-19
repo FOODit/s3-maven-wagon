@@ -1,3 +1,13 @@
+# Manual deployment
+
+Set version, install locally, and upload jar/pom on artifactory `ext-release-local` repository.
+
+```
+mvn --batch-mode -U versions:set -DRelease=true -DnewVersion=1.0.2
+mvn install
+```
+
+
 # Amazon S3/Google Developer Storage Maven Wagon Support
 
 You can use Amazon S3 or Google Developer Storage as a maven repository with this plugin.
