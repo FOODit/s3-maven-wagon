@@ -42,6 +42,8 @@ import java.util.List;
  */
 public abstract class AbstractWagon implements Wagon {
 
+    private static final int MAXIMUM_BACKOFF = 32;
+
     private boolean interactive;
 
     private Repository repository;
@@ -236,6 +238,12 @@ public abstract class AbstractWagon implements Wagon {
 
     public final void put(File source, String destination) throws TransferFailedException,
             ResourceDoesNotExistException, AuthorizationException {
+        putInternal(source, destination, 1);
+    }
+
+    private void putInternal(File source, String destination, int retry) throws TransferFailedException,
+            ResourceDoesNotExistException, AuthorizationException {
+
         Resource resource = new Resource(destination);
         transferListeners.fireTransferInitiated(resource, TransferEvent.REQUEST_PUT);
         transferListeners.fireTransferStarted(resource, TransferEvent.REQUEST_PUT);
@@ -250,9 +258,19 @@ public abstract class AbstractWagon implements Wagon {
             throw e;
         } catch (AuthorizationException e) {
             throw e;
+        // } catch (Exception e) { // ResponseCode: 429, ResponseStatus: Too Many Requests
         } catch (Exception e) {
-            transferListeners.fireTransferError(resource, TransferEvent.REQUEST_PUT, e);
-            throw new TransferFailedException("Transfer of resource " + destination + "failed", e);
+            try {
+                Thread.sleep((long) (retry + (Math.random() * 1000)));
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+            retry = retry * 2;
+            if (retry > MAXIMUM_BACKOFF) {
+                transferListeners.fireTransferError(resource, TransferEvent.REQUEST_PUT, e);
+                throw new TransferFailedException("Transfer of resource " + destination + " failed!", e);
+            }
+            putInternal(source, destination, retry);
         }
     }
 
