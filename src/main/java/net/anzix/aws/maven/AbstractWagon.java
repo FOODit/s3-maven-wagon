@@ -29,6 +29,7 @@ import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.proxy.ProxyInfoProvider;
 import org.apache.maven.wagon.repository.Repository;
 import org.apache.maven.wagon.resource.Resource;
+import org.jets3t.service.ServiceException;
 
 import java.io.File;
 import java.util.List;
@@ -258,19 +259,28 @@ public abstract class AbstractWagon implements Wagon {
             throw e;
         } catch (AuthorizationException e) {
             throw e;
-        // } catch (Exception e) { // ResponseCode: 429, ResponseStatus: Too Many Requests
-        } catch (Exception e) {
-            try {
-                Thread.sleep((long) (retry + (Math.random() * 1000)));
-            } catch (InterruptedException e1) {
-                e1.printStackTrace();
-            }
-            retry = retry * 2;
-            if (retry > MAXIMUM_BACKOFF) {
+        } catch (ServiceException e) {
+            if (e.getResponseCode() == 429) {
+                // ResponseCode: 429, ResponseStatus: Too Many Requests, backoff
+                try {
+                    Thread.sleep((long) ((retry * 1000) + (Math.random() * 1000)));
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                retry = retry * 2;
+                if (retry > MAXIMUM_BACKOFF) {
+                    transferListeners.fireTransferError(resource, TransferEvent.REQUEST_PUT, e);
+                    throw new TransferFailedException("Transfer of resource " + destination + " failed!", e);
+                }
+                System.out.println("Retry number " + retry);
+                putInternal(source, destination, retry);
+            } else {
                 transferListeners.fireTransferError(resource, TransferEvent.REQUEST_PUT, e);
                 throw new TransferFailedException("Transfer of resource " + destination + " failed!", e);
             }
-            putInternal(source, destination, retry);
+        } catch (Exception e) {
+            transferListeners.fireTransferError(resource, TransferEvent.REQUEST_PUT, e);
+            throw new TransferFailedException("Transfer of resource " + destination + " failed!", e);
         }
     }
 
